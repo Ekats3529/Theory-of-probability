@@ -1,0 +1,45 @@
+import csv
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+data = []
+with open('in.csv', newline='') as File:
+    reader_object = csv.reader(File, delimiter=";")
+    for row in reader_object:
+        tmp = [float(".".join(x.split(","))) for x in row]
+        data.extend(tmp)
+
+x_max = max(data)
+x_min = min(data)
+
+R = round((x_max - x_min), 3)
+k = 8
+h = round(R/8, 3)
+
+print(f"Минимум {x_min} Максимум {x_max} Размах {R} Шаг {h}")
+print()
+
+freq = [0 for i in range(8)]
+z = [0 for i in range(8)]
+names = [None for i in range(8)]
+
+print(f"{'Диапазон' : <10}{'Начало' : <10}{'Конец' : <10}{'Частота' : <10}{'Сред. элемент' : <10}")
+
+for i in range(k):
+    beg = round(x_min + i * h, 3)
+    end = round(x_min + (i + 1) * h, 3)
+    z[i] = round((beg + end) / 2, 3)
+    if i == 0:
+        for x in range(100):
+            if beg <= data[x] <= end:
+                freq[i] += 1
+    else:
+        for x in range(100):
+            if beg < data[x] <= end:
+                freq[i] += 1
+    names[i] = f"delta {i + 1}"
+    print(f"{names[i] : <10}{beg : <10}{end : <10}{freq[i] : <10}{z[i] : <10}")
+
+sns.barplot(x=names, y=freq)
+plt.show()
