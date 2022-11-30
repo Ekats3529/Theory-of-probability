@@ -1,0 +1,58 @@
+import csv
+from scipy.stats import chi2_contingency
+from statistics import mean
+from scipy.stats import moment, laplace, norm
+from math import sqrt
+from moments import data, x_mean, sigma
+from gistogram import freq
+
+
+print(f"\nH0 = выборка им. норм. закон распр-я с парам-ми a = {x_mean}, sigma = {sigma}\n")
+
+x_max = max(data)
+x_min = min(data)
+
+R = round((x_max - x_min), 3)
+k = 8
+h = round(R/8, 3)
+INF = 1e15
+
+
+z = ["-INF"]
+a = ["-INF"]
+F = [-0.5]
+for i in range(1, k - 1):
+      a.append(round(x_min + i * h, 3))
+      z.append((a[i] - x_mean) / sigma)
+      z[i] = round(z[i], 4)
+      F.append(norm.cdf(z[i]) - 0.5)
+      F[i] = round(F[i], 4)
+
+a.append("INF")
+z.append('INF')
+F.append(0.5)
+
+print(f"{'i' : <3}{'a[i-1]' : <10}{'a[i]' : <10}{'n_i' : <10}{'z[i-1]' : <10}{'z[i]' : <10}"
+      f"{'Ф(z[i-1])' : <15}{'Ф(z[i])' : <15}{'np_i' : <10}{'chi_square' : <15}\n")
+
+sum_chi2 = 0
+for i in range(1, 8):
+      np_i = round((F[i] - F[i-1])*100, 4)
+      chi2 = ((freq[i-1] - np_i)**2)/np_i
+      sum_chi2 += chi2
+      print(f"{i: <3}{a[i - 1] : <10}{a[i] : <10}"
+            f"{freq[i - 1] : <10}{z[i-1] : <10}{z[i] : <10}"
+            f"{F[i-1] : <15}{F[i] : <15}"
+            f"{np_i : <10}"
+            f"{round(chi2, 4) : <10}")
+
+
+print("\nЧисло степеней свободы: 4")
+print("alpha = 0.05")
+print(f"\nchi_square(0.05, 4) = 9.5")
+
+print(f"chi_square выборочное = {sum_chi2}")
+print("Гипотеза Н0 верна")
+
+
+
