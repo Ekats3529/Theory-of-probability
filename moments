@@ -1,0 +1,28 @@
+import csv
+from statistics import mean
+from scipy.stats import moment
+from math import sqrt
+
+data = []
+with open('in.csv', newline='') as File:
+    reader_object = csv.reader(File, delimiter=";")
+    for row in reader_object:
+        tmp = [float(".".join(x.split(","))) for x in row]
+        data.extend(tmp)
+
+
+x_mean = mean(data)
+D = moment(data, 2)
+sigma = sqrt(D)
+
+m3 = moment(data, 3)
+A = m3 / (sigma ** 3)
+
+m4 = moment(data, 4)
+E = m4 / (sigma ** 4)
+
+# print(f"{'Выборочная средняя' : <50} {x_mean}\n"
+#       f"{'Выборочная дисперсия' : <50} {D}\n"
+#       f"{'Выборочное среднее квадратичное отклонение' : <50} {sigma}\n"
+#       f"{'Выборочный коэффициент асимметрии' : <50} {A}\n"
+#       f"{'Выборочный коэффициент эксцесса' : <50} {E}\n")
